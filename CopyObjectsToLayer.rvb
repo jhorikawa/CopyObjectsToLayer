@@ -1,0 +1,30 @@
+﻿Option Explicit
+'Script written by <Junichiro Horikawa>
+'Script copyrighted by <Junichiro Horikawa>
+'Script version Thursday, 21 April 2011 10:03:03
+
+Call Main()
+Sub Main()
+	Dim arrObjects,arrLayers, strLayer, arrNew, strNew
+	
+	arrObjects = Rhino.getObjects("select Objects to duplicate",,,True)
+	If IsArray(arrObjects) Then
+		Rhino.UnselectAllObjects
+		arrLayers = Rhino.LayerNames
+		If IsArray(arrLayers) Then
+			arrLayers = Rhino.Sort(arrLayers)
+			strLayer = Rhino.ComboListBox(arrLayers,"Destination Layer" & "<" & Rhino.CurrentLayer & ">")
+			If Not IsNull(strLayer) Then
+				If Not Rhino.IsLayer(strLayer) Then Rhino.AddLayer(strLayer)
+				arrNew = Rhino.CopyObjects(arrObjects)
+				If IsArray(arrNew) Then
+					For Each strNew In arrNew
+						Rhino.ObjectLayer strNew, strLayer
+					Next
+				End If
+				Rhino.SelectObjects arrNew
+			End If
+		End If
+	End If
+	
+End Sub
